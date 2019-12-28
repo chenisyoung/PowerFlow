@@ -7,27 +7,25 @@ clc;clear;
     Sb = sysdata(1,3); %功率标幺值 基准
     balance = sysdata(3,2); % 平衡节点编号
     pvs = pvdata(:,1); % pv节点编号
-    tic
     Y=Y_matrix(sysdata, linedata, branchdata, transferdata); % 使用复数直接计算 速度差不多 更容易看懂
-    toc
     % Y = Form_Y_matrix(nodes, linedata(:,2:end), transferdata(:,2:end), branchdata);%这个函数使用指导书上的算法
 
     %% 设初值 之后弄成function
+    tic
     U = ones(sysdata(1,1),1);       % 初幅值1
     alphaU = zeros(sysdata(1,1),1);  % 初相位0
     U(pvdata(:,1))=pvdata(:,2); % pv节点电压代入入 
     U_polar = U.*exp(1i.*alphaU); 
     % abs_y = abs(Y);
     %% 开始迭代求解
-    toc
     loops = 0;
     while 1
         % 先计算 当前功率
         [nowP, nowQ] = calculatepower(U_polar, Y); 
         % 求不平衡量 和 当前精度
         [unb, maxun] = calcutedelta(nodes, rundata, nowP, nowQ, Sb, balance, pvs);
+        
         if maxun < e  % 如果精度足够
-            toc
             disp('精度达到要求');
             disp(['循环次数' ': ' num2str(loops)]);
             alphaU = rad2deg(alphaU);
@@ -44,6 +42,7 @@ clc;clear;
         delta = Jac \ unb;
         alphaU = alphaU - delta(1:nodes);  % 先是相角
         U = U - delta(nodes+1:end) .* abs(U);  % 幅值
-        U_polar = U.*exp(1i.*alphaU);  % 重新化为复数
+        U_polar = sparse(U.*exp(1i.*alphaU));  % 重新化为复数
         loops = loops + 1;
     end
+    toc

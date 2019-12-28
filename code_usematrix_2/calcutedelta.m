@@ -15,4 +15,5 @@ deltaQ(balance) = 0;
 deltaQ(pvs) = 0;
 unb = [deltaP;deltaQ];
 maxun = max(abs(unb));
+unb = sparse(unb);
 end
