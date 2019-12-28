@@ -1,4 +1,4 @@
-function [sysdata, linedata, branchdata, transferdata, rundata, pvdata, gendata]=loadfile()
+function [sysdata, linedata, branchdata, transferdata, rundata, pvdata]=loadfile()
 % 
 % 输出:
 % sysdata: 系统参数
@@ -39,6 +39,5 @@ branchdata = datas(index(2)+1:index(3)-1,:);% 接地参数
 transferdata = datas(index(3)+1:index(4)-1,:);% 变压器参数
 rundata = datas(index(4)+1:index(5)-1,:);% 运行参数
 pvdata = datas(index(5)+1:index(6)-1,:);% pv节点参数
-gendata = datas(index(6)+1:index(7)-1,:);% 发电机参数
 
 end

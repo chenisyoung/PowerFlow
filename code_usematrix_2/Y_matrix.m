@@ -1,31 +1,23 @@
-
 function Y=Y_matrix(sysdata, linedata, branchdata, transferdata)
    
  %% 形成线路参数
     % linedata[编号, 首节点, 尾结点, 支路电阻, 支路电抗, 对地导纳/2]
-     Y = zeros(sysdata(1, 1));  % 试验后发现这个比下面的快 但是可能占用内存多一点
+     Y = zeros(sysdata(1, 1));  % 试验后发现占用内存多一点
     for t=1 : size(linedata)
         temp = linedata(t,:);
         i = temp(2);
         j = temp(3);
         com = complex(temp(4), temp(5));
-        % com = temp(4) + 1i*temp(5);
         G = -1 / com; % 导纳
         Y(i, i) = Y(i, i) + 1i*temp(6) - G; % 自导纳
         Y(j, j) = Y(j, j) + 1i*temp(6) - G;
         Y(i, j) = G;
         Y(j, i) = G;
+        if i == j
+            disp('sa')
+        end
     end
-    % Y = sparse(Y);
-    % 使用矩阵
-%     G = linedata(:, 4);
-%     B = linedata(:, 5);
-%     hdaona = -1 ./ complex(G, B);  % 使用点除 得到互导纳
-%     Y = sparse(linedata(:,2),linedata(:,3),hdaona);
-%     for k=1 : size(linedata)
-%         Y(linedata(k, 2),linedata(k, 2)) = Y(linedata(k, 2),linedata(k, 2)) + linedata(k, 6);
-%         Y(linedata(k, 3),linedata(k, 3)) = Y(linedata(k, 3),linedata(k, 3)) + linedata(k, 6);
-%     end
+Y = sparse(Y);
  %% 形成接地支路参数
  for i = 1:size(branchdata)
      branch_temp = branchdata(i,:);
